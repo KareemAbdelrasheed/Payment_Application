@@ -6,7 +6,7 @@
 #include "server.h"
 
 ST_transaction_t transdata;
-
+extern  ST_accountsDB_t accountsDB[255];
 void main(void)
 {
 	while (1)
@@ -27,7 +27,8 @@ void main(void)
 			printf("Expired Card\n ");
 			break;
 		}
-
+			
+			
 		getTransactionAmount(&(transdata.terminalData));
 		setMaxAmount(&(transdata.terminalData), 20000.00);
 		Error_Term = isBelowMaxAmount(&(transdata.terminalData));
@@ -37,7 +38,6 @@ void main(void)
 			printf("Declined Amount Exceeding Limit\n ");
 			break;
 		}
-
 		//server stage
 		EN_serverError_t Error_Server = saveTransaction(&transdata);
 		if ((Error_Server == ACCOUNT_NOT_FOUND)||(Error_Server == BLOCKED_ACCOUNT))

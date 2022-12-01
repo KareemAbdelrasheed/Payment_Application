@@ -12,20 +12,20 @@
 #include "card.h"
 #include "server.h"
 
-static const ST_cardData_t card_1 = { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" };
-static const ST_cardData_t card_2 = { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" };
-static const ST_cardData_t card_3 = { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" };
-static const ST_cardData_t card_4 = { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" };
+static ST_cardData_t card_1 = { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" };
+static ST_cardData_t card_2 = { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" };
+static ST_cardData_t card_3 = { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" };
+static ST_cardData_t card_4 = { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" };
 
-static const ST_terminalData_t term_1 = { 13000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_2 = { 20000000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_3 = { 1000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_4 = { 2000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_1 = { 13000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_2 = { 20000000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_3 = { 1000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_4 = { 2000.0,20000.0,"12/12/2015" };
 
-static const ST_transaction_t transData_1 = {{ "asdfghjkloiuytrewqasdf","8989374615434321","02/25" },{ 13000.0,20000.0,"12/12/2015" },APPROVED,0 };
-static const ST_transaction_t transData_2 = {{ "asdfghjkloiuytrewqasdf","5807007076043787","02/25" },{ 20000000.0,20000.0,"12/12/2015" },DECLINED_INSUFFECIENT_FUND,0 };
-static const ST_transaction_t transData_3 = {{ "asdfghjkloiuytrewqasdf","5807007076041234","02/25" },{ 1000.0,20000.0,"12/12/2015" },DECLINED_STOLEN_CARD,0 };
-static const ST_transaction_t transData_4 = {{ "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" },{ 2000.0,20000.0,"12/12/2015" },FRAUD_CARD,0 };
+static ST_transaction_t transData_1 = {{ "asdfghjkloiuytrewqasdf","8989374615434321","02/25" },{ 13000.0,20000.0,"12/12/2015" },APPROVED,0 };
+static ST_transaction_t transData_2 = {{ "asdfghjkloiuytrewqasdf","5807007076043787","02/25" },{ 20000000.0,20000.0,"12/12/2015" },DECLINED_INSUFFECIENT_FUND,0 };
+static ST_transaction_t transData_3 = {{ "asdfghjkloiuytrewqasdf","5807007076041234","02/25" },{ 1000.0,20000.0,"12/12/2015" },DECLINED_STOLEN_CARD,0 };
+static ST_transaction_t transData_4 = {{ "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" },{ 2000.0,20000.0,"12/12/2015" },FRAUD_CARD,0 };
 
 ST_accountsDB_t accountRefrence;
 
@@ -66,7 +66,11 @@ EN_terminalError_t isCardExpired(ST_cardData_t *cardData, ST_terminalData_t *ter
 	uint8_t ExpiryYearTest  =  ((cardData->cardExpirationDate[3]-'0')*10)+((cardData->cardExpirationDate[4])-'0');
 	uint8_t TermMonthTest   =  ((termData->transactionDate[3]-'0')*10)+((termData->transactionDate[4])-'0');
 	uint8_t TermYearTest    =  ((termData->transactionDate[8]-'0')*10)+((termData->transactionDate[9])-'0');	
-	if(ExpiryYearTest >= TermYearTest)
+	if(ExpiryYearTest > TermYearTest)
+	{
+		Error = TERMINAL_OK ;
+	}
+	else if(ExpiryYearTest == TermYearTest)
 	{
 		if(ExpiryMonthTest >= TermMonthTest)
 		{

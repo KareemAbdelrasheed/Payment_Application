@@ -48,5 +48,7 @@ void isValidAccountTest(void);
 void isBlockedAccountTest(void);
 void isAmountAvailableTest(void);
 void recieveTransactionDataTest(void);
+void listSavedTransactionsTest(void);
+void saveTransactionTest(void);
 
 #endif

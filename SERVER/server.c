@@ -12,27 +12,27 @@
 #include "card.h"
 #include "terminal.h"
 #include "server.h"
-static const ST_cardData_t card_1 = { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" };
-static const ST_cardData_t card_2 = { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" };
-static const ST_cardData_t card_3 = { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" };
-static const ST_cardData_t card_4 = { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" };
+static ST_cardData_t card_1 = { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" };
+static ST_cardData_t card_2 = { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" };
+static ST_cardData_t card_3 = { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" };
+static ST_cardData_t card_4 = { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" };
 
-static const ST_terminalData_t term_1 = { 13000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_2 = { 20000000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_3 = { 1000.0,20000.0,"12/12/2015" };
-static const ST_terminalData_t term_4 = { 2000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_1 = { 13000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_2 = { 20000000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_3 = { 1000.0,20000.0,"12/12/2015" };
+static ST_terminalData_t term_4 = { 2000.0,20000.0,"12/12/2015" };
 
-static const ST_transaction_t transData_1 = { { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" },{ 13000.0,20000.0,"12/12/2015" },APPROVED,0 };
-static const ST_transaction_t transData_2 = { { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" },{ 20000000.0,20000.0,"12/12/2015" },DECLINED_INSUFFECIENT_FUND,0 };
-static const ST_transaction_t transData_3 = { { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" },{ 1000.0,20000.0,"12/12/2015" },DECLINED_STOLEN_CARD,0 };
-static const ST_transaction_t transData_4 = { { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" },{ 2000.0,20000.0,"12/12/2015" },FRAUD_CARD,0 };
+static ST_transaction_t transData_1 = { { "asdfghjkloiuytrewqasdf","8989374615434321","02/25" },{ 13000.0,20000.0,"12/12/2015" },APPROVED,0 };
+static ST_transaction_t transData_2 = { { "asdfghjkloiuytrewqasdf","5807007076043787","02/25" },{ 20000000.0,20000.0,"12/12/2015" },DECLINED_INSUFFECIENT_FUND,0 };
+static ST_transaction_t transData_3 = { { "asdfghjkloiuytrewqasdf","5807007076041234","02/25" },{ 1000.0,20000.0,"12/12/2015" },DECLINED_STOLEN_CARD,0 };
+static ST_transaction_t transData_4 = { { "asdfghjkloiuytrewqasdf","89893740000000039632","02/25" },{ 2000.0,20000.0,"12/12/2015" },FRAUD_CARD,0 };
 
 static ST_accountsDB_t accountRefrence;
 static ST_accountsDB_t CuurentAccount;
 
  ST_accountsDB_t accountsDB[255]={{2000.0    , RUNNING, "8989374615436851"}
 							 	 ,{100000.0  , BLOCKED, "5807007076043875"}
-							     ,{200000.0  , RUNNING, "8989374615434321"}
+							     ,{200000.0/*(20000.0-5000.0)*/  , RUNNING, "8989374615434321"}
 								 ,{50000.0   , BLOCKED, "5807007076041234"}
 								 ,{13000.0   , RUNNING, "8989374615436555"}
 								 ,{160000.0  , RUNNING, "5807007076043787"}
@@ -137,7 +137,6 @@ EN_serverError_t isAmountAvailable(ST_terminalData_t *termData, ST_accountsDB_t 
 EN_serverError_t saveTransaction(ST_transaction_t *transData)
 {
 	EN_transState_t TransState=APPROVED;
-	EN_serverError_t Error=SERVER_OK;
 	static uint32_t counter=0;
 	static uint32_t  sequencenumbertransaction=0;
     TransState=recieveTransactionData(transData);
@@ -147,7 +146,7 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData)
 	counter++;
 	sequencenumbertransaction++;
 	listSavedTransactions();
-	return Error;
+	return TransState;
 }
 void listSavedTransactions(void)
 {
@@ -228,4 +227,32 @@ void recieveTransactionDataTest(void)
 	printf("Expected Result: 3\n");
 	printf("Actual Result: %d\n",Error);
 	
+}
+void listSavedTransactionsTest(void)
+{
+	for(int i=0;i<4;i++)
+	{
+		listSavedTransactions();
+	}
+}
+
+void saveTransactionTest(void)
+{
+	printf("Tester Name: Kareem Abd ElRasheed\nFunction Name: saveTransactionTest\n");
+	printf("Test Case 1:\n");
+	EN_serverError_t Error=saveTransaction(&transData_1);
+	printf("Expected Result: 0\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 2:\n");
+	Error=saveTransaction(&transData_2);
+	printf("Expected Result: 1\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 3:\n");
+	Error=saveTransaction(&transData_3);
+	printf("Expected Result: 2\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 4:\n");
+	Error=saveTransaction(&transData_4);
+	printf("Expected Result: 3\n");
+	printf("Actual Result: %d\n",Error);
 }

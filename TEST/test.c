@@ -10,7 +10,7 @@ const ST_cardData_t card_1={"asdfghjkloiuytrewqasdf","8989374615434321","02/25"}
 const ST_cardData_t card_2={"asdfghjkloiuytrewqasdf","5807007076043787","02/25"};
 const ST_cardData_t card_3={"asdfghjkloiuytrewqasdf","5807007076041234","02/25"};
 const ST_cardData_t card_4={"asdfghjkloiuytrewqasdf","89893740000000039632","02/25"};
-
+ST_cardData_t card_5;
 const ST_terminalData_t term_1={13000.0,20000.0,"12/12/2015"};
 const ST_terminalData_t term_2={20000000.0,20000.0,"12/12/2015"};
 const ST_terminalData_t term_3={1000.0,20000.0,"12/12/2015"};
@@ -34,7 +34,11 @@ ST_accountsDB_t accountsDB[255]={{2000.0    , RUNNING, "8989374615436851"}
 								,{302000.0  , RUNNING, "8989374615439632"}};
 								
 								
-ST_transaction_t transaction[255]={{0}};
+ST_transaction_t transaction[255]={{card_1,term_1,APPROVED,1},
+                                   {card_2,term_2,DECLINED_INSUFFECIENT_FUND,2},
+                                   {card_3,term_3,DECLINED_STOLEN_CARD,3},
+								   {card_4,term_4,FRAUD_CARD,4}};
+
 
 EN_cardError_t getCardHolderName(ST_cardData_t *cardData)
 {
@@ -267,7 +271,6 @@ EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence)
 	{
 		Error=SERVER_OK;
 	}
-	else
 	{
 		Error=BLOCKED_ACCOUNT;
 	}
@@ -290,7 +293,6 @@ EN_serverError_t isAmountAvailable(ST_terminalData_t *termData, ST_accountsDB_t 
 EN_serverError_t saveTransaction(ST_transaction_t *transData)
 {
 	EN_transState_t TransState=APPROVED;
-	EN_serverError_t Error=SERVER_OK;
 	static uint32_t counter=0;
 	static uint32_t  sequencenumbertransaction=0;
     TransState=recieveTransactionData(transData);
@@ -299,7 +301,7 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData)
 	transaction[counter].transState=TransState;
 	counter++;
 	sequencenumbertransaction++;
-	return Error;
+	return TransState;
 }
 EN_transState_t recieveTransactionData(ST_transaction_t *transData)
 {
@@ -326,8 +328,92 @@ EN_transState_t recieveTransactionData(ST_transaction_t *transData)
 	}
 	return Error;
 }
+void recieveTransactionDataTest(void)
+{
+	printf("Tester Name: Kareem Abd ElRasheed\nFunction Name: recieveTransactionDataTest\n");
+	printf("Test Case 1:\n");
+	EN_serverError_t Error=recieveTransactionData(&transData_1);
+	printf("Expected Result: 0\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 2:\n");
+	Error=recieveTransactionData(&transData_2);
+	printf("Expected Result: 1\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 3:\n");
+	Error=recieveTransactionData(&transData_3);
+	printf("Expected Result: 2\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 4:\n");
+	Error=recieveTransactionData(&transData_4);
+	printf("Expected Result: 3\n");
+	printf("Actual Result: %d\n",Error);
+	
+}
+void getCardHolderNameTest(void)
+{
+	
+	printf("Tester Name: Kareem Abd ElRasheed\nFunction Name: getCardHolderName\n");
+	printf("Test Case 1:\n");
+	EN_cardError_t Error=getCardHolderName(&card_5);
+	printf("Expected Result: 0\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 2:\n");
+	Error=getCardHolderName(&card_5);
+	printf("Expected Result: 1\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 3:\n");
+	Error=getCardHolderName(&card_5);
+	printf("Expected Result: 1\n");
+	printf("Actual Result: %d\n",Error);
+}
+void listSavedTransactions(void)
+{
+	static uint32_t counteer = 0;
+	printf("##########################################\n");
+	
+	printf("Transaction Sequence Number: %d\n",transaction[counteer].transactionSequenceNumber);
+	printf("Transaction Date: %s\n",transaction[counteer].terminalData.transactionDate);
+	printf("Transaction Amount: %.2f\n",transaction[counteer].terminalData.transAmount);
+	printf("Transaction State: %d\n",transaction[counteer].transState);	
+	printf("Terminal Max Amount: %0.2f\n",transaction[counteer].terminalData.maxTransAmount);
+	printf("Cardholder Name: %s\n",transaction[counteer].cardHolderData.cardHolderName);
+	printf("PAN: %s\n",transaction[counteer].cardHolderData.primaryAccountNumber);
+	printf("Card Expiration Date: %s\n",transaction[counteer].cardHolderData.cardExpirationDate);
+	
+	printf("##########################################\n");
+	counteer++;
+}
+
+void listSavedTransactionsTest(void)
+{
+	for(int i=0;i<4;i++)
+	{
+		listSavedTransactions();
+	}
+}
+
+void saveTransactionTest(void)
+{
+	printf("Tester Name: Kareem Abd ElRasheed\nFunction Name: saveTransactionTest\n");
+	printf("Test Case 1:\n");
+	EN_serverError_t Error=saveTransaction(&transData_1);
+	printf("Expected Result: 0\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 2:\n");
+	Error=saveTransaction(&transData_2);
+	printf("Expected Result: 1\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 3:\n");
+	Error=saveTransaction(&transData_3);
+	printf("Expected Result: 2\n");
+	printf("Actual Result: %d\n",Error);
+	printf("Test Case 4:\n");
+	Error=saveTransaction(&transData_4);
+	printf("Expected Result: 3\n");
+	printf("Actual Result: %d\n",Error);
+}
 
 int main(void)
 {	
-	
+	saveTransactionTest();
 }
